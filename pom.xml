@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>me.taylorkelly</groupId>
 	<artifactId>help</artifactId>
-	<version>1</version>
+	<version>0.2-SNAPSHOT</version>
 	<name>Help</name>
 	<url>http://www.bukkit.org</url>
 	<repositories>
