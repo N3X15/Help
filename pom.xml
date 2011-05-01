@@ -39,13 +39,6 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<!-- Grabs from 3rdparty repo -->
-			<groupId>org.anjocaido.groupmanager</groupId>
-			<artifactId>GroupManager</artifactId>
-			<version>1.0alpha-3</version>
-			<type>jar</type>
-		</dependency>
 	</dependencies>
 	<build>
 		<finalName>${project.name}</finalName>
