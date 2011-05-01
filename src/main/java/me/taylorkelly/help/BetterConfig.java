@@ -35,7 +35,8 @@ public class BetterConfig extends Configuration {
         return super.getBoolean(path, defaultValue);
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public BetterNode getNode(String path) {
         if (getProperty(path) == null || !(getProperty(path) instanceof Map)) {
             BetterNode node = new BetterNode();

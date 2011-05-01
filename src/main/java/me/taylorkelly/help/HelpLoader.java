@@ -12,7 +12,8 @@ import org.yaml.snakeyaml.reader.UnicodeReader;
 
 public class HelpLoader {
 
-    public static void load(File dataFolder, HelpList list) {
+    @SuppressWarnings("unchecked")
+	public static void load(File dataFolder, HelpList list) {
         File helpFolder = new File(dataFolder, "ExtraHelp");
         if (helpFolder.exists()) {
             helpFolder.mkdirs();
@@ -70,7 +71,7 @@ public class HelpLoader {
 
                     if (helpNode.containsKey("permissions")) {
                         if (helpNode.get("permissions") instanceof List) {
-                            for (Object permission : (List) helpNode.get("permissions")) {
+                            for (Object permission : (List<Object>) helpNode.get("permissions")) {
                                 permissions.add(permission.toString());
                             }
                         } else {
