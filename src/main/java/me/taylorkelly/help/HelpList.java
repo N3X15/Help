@@ -234,4 +234,8 @@ public class HelpList {
         customSaveEntry(plugin, entry, true);
         return true;
     }
+
+	public boolean containsPlugin(String pluginName) {
+		return pluginHelpList.containsKey(pluginName.toLowerCase());
+	}
 }
