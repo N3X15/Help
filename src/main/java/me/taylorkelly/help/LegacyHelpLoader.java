@@ -37,11 +37,13 @@ public class LegacyHelpLoader {
                     continue;
                 }
                 String command = helpNode.get("command").toString();
+                
                 if (!helpNode.containsKey("description")) {
                     HelpLogger.warning(command + "'s Help entry is missing a description");
                     continue;
                 }
                 String description = helpNode.get("description").toString();
+                
                 if (!helpNode.containsKey("plugin")) {
                     HelpLogger.warning(command + "'s Help entry is missing a plugin");
                     continue;

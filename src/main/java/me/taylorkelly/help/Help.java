@@ -1,6 +1,11 @@
 package me.taylorkelly.help;
 
 import java.io.File;
+
+import me.taylorkelly.help.commands.CommandPlugins;
+import me.taylorkelly.help.commands.CommandReload;
+import me.taylorkelly.help.commands.CommandSearch;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -12,7 +17,7 @@ public class Help extends JavaPlugin {
 
     private String name;
     private String version;
-    private HelpList helpList;
+    public HelpList helpList;
 
     public Help() {
         helpList = new HelpList();
@@ -41,6 +46,12 @@ public class Help extends JavaPlugin {
         HelpPermissions.initialize(getServer());
         HelpSettings.initialize(getDataFolder());
 
+        MasterHelpCommand mhc = new MasterHelpCommand(this);
+        mhc.registerExecutor("plugins", new CommandPlugins(this));
+        mhc.registerExecutor("search", new CommandSearch(this));
+        mhc.registerExecutor("reload", new CommandReload(this));
+        getCommand("help").setExecutor(mhc);
+        
         this.registerCommand("help Help", "Displays more /help options", this, true);
         this.registerCommand("help", "Displays the basic Help menu", this);
         this.registerCommand("help [plugin]", "Displays the full help for [plugin]", this, true);
@@ -51,6 +62,7 @@ public class Help extends JavaPlugin {
         HelpLogger.info(name + " " + version + " enabled");
     }
 
+/*    
     public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
         String[] split = args;
         String commandName = command.getName().toLowerCase();
@@ -58,9 +70,7 @@ public class Help extends JavaPlugin {
         if (sender instanceof Player) {
             Player player = (Player) sender;
             if (commandName.equals("help")) {
-                /**
-                 * /help (#)
-                 */
+                // /help (#)
                 if (split.length == 0 || (split.length == 1 && isInteger(split[0]))) {
                     Lister lister = new Lister(helpList, player);
                     if (split.length == 1) {
@@ -78,21 +88,15 @@ public class Help extends JavaPlugin {
                     }
                     lister.list();
 
-                    /**
-                     * /help plugins
-                     */
+                // /help plugins
                 } else if (split.length == 1 && split[0].equalsIgnoreCase("plugins")) {
                     helpList.listPlugins(player);
 
-                    /**
-                     * /help reload
-                     */
+                // /help reload
                 } else if (split.length == 1 && split[0].equalsIgnoreCase("reload")) {
                     helpList.reload(player, getDataFolder());
 
-                    /**
-                     * /help search [query]
-                     */
+                // /help search [query]
                 } else if (split.length > 1 && split[0].equalsIgnoreCase("search")) {
                     String name = "";
                     for (int i = 1; i < split.length; i++) {
@@ -106,9 +110,7 @@ public class Help extends JavaPlugin {
                     searcher.setQuery(name);
                     searcher.search();
 
-                    /**
-                     * /help [plugin] (#)
-                     */
+                // /help [plugin] (#)
                 } else if (split.length == 1 || (split.length == 2 && isInteger(split[1]))) {
                     Lister lister = new Lister(helpList, split[0], player);
                     if (split.length == 2) {
@@ -133,7 +135,7 @@ public class Help extends JavaPlugin {
         } //TODO Console help
         return false;
     }
-
+*/
     public static boolean isInteger(String string) {
         try {
             Integer.parseInt(string);
@@ -159,7 +161,14 @@ public class Help extends JavaPlugin {
         return helpList.registerCommand(command, description, plugin.getDescription().getName(), main, permissions, this.getDataFolder());
     }
 
-    public enum HelpReciever {
+	public String getName() {
+		return name;
+	}
+	public String getVersion() {
+		return version;
+	}
+
+	public enum HelpReciever {
 
         PLAYER, CONSOLE;
     }
