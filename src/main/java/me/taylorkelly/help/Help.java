@@ -1,15 +1,15 @@
 package me.taylorkelly.help;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import me.taylorkelly.help.commands.CommandPlugins;
 import me.taylorkelly.help.commands.CommandReload;
 import me.taylorkelly.help.commands.CommandSearch;
 
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -18,6 +18,7 @@ public class Help extends JavaPlugin {
     private String name;
     private String version;
     public HelpList helpList;
+	public List<HelpCommand> commandList = new ArrayList<HelpCommand>();
 
     public Help() {
         helpList = new HelpList();
@@ -59,7 +60,91 @@ public class Help extends JavaPlugin {
         this.registerCommand("help search [query]", "Search the help entries for [query]", this);
         this.registerCommand("help reload", "Reload the ExtraHelp.yml entries", this);
 
+        loadCommands();
         HelpLogger.info(name + " " + version + " enabled");
+    }
+    
+    /**
+     * Stolen from CraftBukkit, with added Permissions checks
+     * @param plugin
+     */
+    @SuppressWarnings("unchecked")
+    public void parsePluginCommands(Plugin plugin) {
+        Object object = plugin.getDescription().getCommands();
+
+        if (object == null) {
+            return;
+        }
+
+        Map<String, Map<String, Object>> map = (Map<String, Map<String, Object>>) object;
+
+        if (map != null) {
+            for (Entry<String, Map<String, Object>> entry : map.entrySet()) {
+                HelpCommand newCmd = new HelpCommand(entry.getKey(), plugin);
+                Object description = entry.getValue().get("description");
+                Object usage = entry.getValue().get("usage");
+                Object aliases = entry.getValue().get("aliases");
+                Object permissions = entry.getValue().get("permissions");
+
+                if (description != null) {
+                    newCmd.setDescription(description.toString());
+                }
+
+                if (usage != null) {
+                    newCmd.setUsage(usage.toString());
+                }
+
+                if (permissions != null) {
+                    List<String> permList = new ArrayList<String>();
+
+                    if (permissions instanceof List) {
+                        for (Object o : (List<Object>) permissions) {
+                            permList.add(o.toString());
+                        }
+                    } else {
+                        permList.add(permissions.toString());
+                    }
+
+                    newCmd.setPermissions(permList);
+                }
+
+                if (aliases != null) {
+                    List<String> aliasList = new ArrayList<String>();
+
+                    if (aliases instanceof List) {
+                        for (Object o : (List<Object>) aliases) {
+                            aliasList.add(o.toString());
+                        }
+                    } else {
+                        aliasList.add(aliases.toString());
+                    }
+
+                    newCmd.setAliases(aliasList);
+                }
+
+                commandList.add(newCmd);
+            }
+        }
+    }
+
+    private void loadCommands() {
+    	commandList.clear();
+		for(Plugin p : getServer().getPluginManager().getPlugins()) {
+			parsePluginCommands(p);
+		}
+		HelpLogger.info("Added "+commandList.size()+" registered commands.");
+	}
+    
+    public HelpCommand getRegisteredCommand(String name) {
+    	for(HelpCommand hc : commandList) {
+    		if(hc.name.equalsIgnoreCase(name))
+    			return hc;
+    		for(String alias : hc.aliases) {
+    			if(alias.equalsIgnoreCase(name))
+    				return hc;
+    		}
+    	}
+		return null;
     }
 
 /*    
@@ -172,4 +257,8 @@ public class Help extends JavaPlugin {
 
         PLAYER, CONSOLE;
     }
+
+	public boolean containsCommand(String commandName) {
+		return getRegisteredCommand(commandName)!=null;
+	}
 }
